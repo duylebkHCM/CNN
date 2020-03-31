@@ -10,7 +10,8 @@ class ConvNetFactory:
     def build(name, *args, **kargs):
         mappings = {
             "shallownet": ConvNetFactory.ShallowNet,
-            "lenet": ConvNetFactory.LeNet            
+            "lenet": ConvNetFactory.LeNet,
+            "karpathynet" : ConvNetFactory.KarpathyNet   
         }
 
         builder = mappings.get(name, None)
@@ -55,4 +56,47 @@ class ConvNetFactory:
         model.add(Activation('softmax'))
 
         return model
-        
+
+    @staticmethod
+    def KarpathyNet(numChannels, imgRows, imgCols, numClasses, dropout = False, **kwargs):
+        model = Sequential()
+        inputshape = (imgRows, imgCols, numChannels)
+
+        model.add(Conv2D(16, (5,5), padding = 'same', input_shape = inputshape))
+        model.add(Activation('relu'))
+        model.add(MaxPooling2D(pool_size = (2,2), strides = (2,2)))
+
+        if dropout:
+            model.add(Dropout(0.25))
+
+        #CONV->RELU->POOL
+        model.add(Conv2D(32, (5,5), padding = 'same'))
+        model.add(Activation('relu'))
+        model.add(MaxPooling2D(pool_size = (2,2), strides = (2,2)))
+
+        if dropout:
+            model.add(Dropout(0.25))
+
+        #CONV->RELU->POOL
+        model.add(Conv2D(64, (5,5), padding = 'same'))
+        model.add(Activation('relu'))
+        model.add(MaxPooling2D(pool_size = (2,2), strides = (2,2)))
+
+        if dropout:
+            model.add(Dropout(0.5))
+
+        #FC->RELU
+        model.add(Flatten())
+        model.add(Dense(128))
+        model.add(Activation('relu'))
+
+        if dropout:
+            model.add(Dropout(0.5))
+
+        #FC->SM
+        model.add(Dense(numClasses))
+        model.add(Activation('softmax'))
+
+        return model
+
+
