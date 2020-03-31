@@ -35,7 +35,26 @@ class ConvNetFactory:
 
         return model
 
-    
+    @staticmethod
+    def LeNet(numChannels, imgRows, imgCols, numClasses, activation = 'tanh', **kargs):
+        model = Sequential()
+        inputShape = (imgRows, imgCols, numChannels)
 
+        model.add(Conv2D(20,(5,5), padding = 'same', input_shape = inputShape))
+        model.add(Activation(activation))
+        model.add(MaxPooling2D(pool_size = (2,2), strides = (2,2)))
 
+        model.add(Conv2D(50,(5,5), padding = 'same', input_shape = inputShape))
+        model.add(Activation(activation))
+        model.add(MaxPooling2D(pool_size = (2,2), strides = (2,2)))
+
+        model.add(Flatten())
+        model.add(Dense(500))
+        model.add(Activation(activation))
+
+        model.add(Dense(numClasses))
+
+        model.add(Activation('softmax'))
+
+        return model
         
