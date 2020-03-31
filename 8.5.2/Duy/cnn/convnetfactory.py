@@ -10,9 +10,7 @@ class ConvNetFactory:
     def build(name, *args, **kargs):
         mappings = {
             "shallownet": ConvNetFactory.ShallowNet,
-            "lenet": ConvNetFactory.LeNet,
-            "karpathynet": ConvNetFactory.KarpathyNet,
-            "minivggnet": ConvNetFactory.MiniVGGNet
+            "lenet": ConvNetFactory.LeNet            
         }
 
         builder = mappings.get(name, None)
