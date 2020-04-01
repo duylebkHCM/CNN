@@ -34,7 +34,7 @@ model = ConvNetFactory.build(args["network"], 3, 32, 32, 10, **kargs)
 sgd = SGD(lr = 0.01, decay = 1e-6, momentum = 0.9, nesterov = True)
 model.compile(loss = "categorical_crossentropy", optimizer = sgd, metrics = ["accuracy"])
 print("[INFO] starting training ...")
-model.fit(trainData, trainLabels, batch_size = args['batch_size'], nb_epoch = args["epochs"], verbose = args["verbose"])
+model.fit(trainData, trainLabels, batch_size = args['batch_size'], epochs = args["epochs"], verbose = args["verbose"])
 
 (loss, accuracy) = model.evaluate(testData, testLabels, batch_size = args["batch_size"], verbose = args["verbose"])
 print("[INFO] accuracy: {:.2f}%".format(accuracy*100))
