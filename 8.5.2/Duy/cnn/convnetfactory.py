@@ -11,7 +11,8 @@ class ConvNetFactory:
         mappings = {
             "shallownet": ConvNetFactory.ShallowNet,
             "lenet": ConvNetFactory.LeNet,
-            "karpathynet" : ConvNetFactory.KarpathyNet   
+            "karpathynet" : ConvNetFactory.KarpathyNet,
+            "minivggnet" : ConvNetFactory.MiniVGGNet
         }
 
         builder = mappings.get(name, None)
@@ -94,6 +95,46 @@ class ConvNetFactory:
             model.add(Dropout(0.5))
 
         #FC->SM
+        model.add(Dense(numClasses))
+        model.add(Activation('softmax'))
+
+        return model
+
+
+    @staticmethod
+    def MiniVGGNet(numChannels, imgRows, imgCols, numClasses, dropout = False, **kwargs):
+        model = Sequential()
+        inputshape = (imgRows, imgCols, numChannels)
+        chanDims = -1
+
+        model.add(Conv2D(32, (3,3), padding = 'same', input_shape = inputshape))
+        model.add(Activation('relu'))
+        model.add(BatchNormalization(axis = chanDims))
+        model.add(Conv2D(32, (3,3), padding = 'same'))
+        model.add(Activation('relu'))
+        model.add(MaxPooling2D(pool_size = (2,2), strides = (2,2)))
+
+        if dropout:
+            model.add(Dropout(0.25))
+
+        model.add(Conv2D(64, (3,3), padding = 'same'))
+        model.add(Activation('relu'))
+        model.add(BatchNormalization(axis = chanDims))
+        model.add(Conv2D(64, (3,3), padding = 'same'))
+        model.add(Activation('relu'))
+        model.add(MaxPooling2D(pool_size = (2,2), strides = (2,2)))
+
+        if dropout:
+            model.add(Dropout(0.25))
+
+        model.add(Flatten())
+        model.add(Dense(512))
+        model.add(Activation('relu'))
+        model.add(BatchNormalization(axis = chanDims))
+
+        if dropout:
+            model.add(Dropout(0.5))
+
         model.add(Dense(numClasses))
         model.add(Activation('softmax'))
 
