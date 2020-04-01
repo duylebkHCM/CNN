@@ -1,4 +1,5 @@
 from __future__ import print_function
+import tensorflow
 from tensorflow.keras.models import load_model
 from tensorflow.keras.datasets import cifar10
 from imutils import paths
@@ -29,9 +30,11 @@ idxs = np.random.choice(testData.shape[0], size = (15,), replace = False)
 testLabels = testLabels.flatten()
 
 print("[INFO] predicting on testing data...")
-probs = model.predict(testData, batch_size = args["batch_size"])
-predictions = probs.argmax(axis=1)
-print(prediction)
+# Run inference on CPU
+with tensorflow.device('/cpu:0'):
+    probs = model.predict(testData, batch_size = args["batch_size"])
+    predictions = probs.argmax(axis=1)
+    print(predictions)
 for (i, prediction) in enumerate(predictions):
     image = testData[i].astype(np.float32)
     image = cv.cvtColor(image, cv.COLOR_RGB2BGR)
@@ -45,20 +48,22 @@ for (i, prediction) in enumerate(predictions):
 cv.destroyAllWindows()
 print("[INFO] testing on images NOT part of CIFAR-10")
 
-for imagePath in paths.list_images(args["test_images"]):
-    print("[INFO] classifying {}".format(imagePath[imagePath.rfind('/') + 1:]))
-    image = cv.imread(imagePath)
-    kerasImage = cv.resize(image, (32,32))
-    kerasImage = cv.cvtColor(kerasImage, cv.COLOR_BGR2RGB)
-    kerasImage = np.array(kerasImage, dtype = 'float')/255.0
+# Run inference on CPU
+with tensorflow.device('/cpu:0'):
 
-    kerasImage = kerasImage[np.newaxis,...]
-    probs = model.predict(kerasImage, batch_size = args["batch_size"])
-    print(probs)
-    prediction = probs.argmax(axis=1)[0]
-    print(prediction)
+    for imagePath in paths.list_images(args["test_images"]):
+        print("[INFO] classifying {}".format(imagePath[imagePath.rfind('/') + 1:]))
+        image = cv.imread(imagePath)
+        kerasImage = cv.resize(image, (32,32))
+        kerasImage = cv.cvtColor(kerasImage, cv.COLOR_BGR2RGB)
+        kerasImage = np.array(kerasImage, dtype = 'float')/255.0
 
-    cv.putText(image, gtLabels[prediction], (10,35), cv.FONT_HERSHEY_SIMPLEX, 1.0, (0,255,0), 3)
-    cv.imshow("Image", image)
-    cv.waitKey(0)
-    
+        kerasImage = kerasImage[np.newaxis,...]
+        probs = model.predict(kerasImage, batch_size = args["batch_size"])
+        print(probs)
+        prediction = probs.argmax(axis=1)[0]
+        print(prediction)
+
+        cv.putText(image, gtLabels[prediction], (10,35), cv.FONT_HERSHEY_SIMPLEX, 1.0, (0,255,0), 3)
+        cv.imshow("Image", image)
+        cv.waitKey(0)
