@@ -28,13 +28,17 @@ labels = [p.split(os.path.sep)[-2] for p in imagePaths]
 le = LabelEncoder()
 labels = le.fit_transform(labels)
 
+names = [n.split(os.path.sep)[-1] for n in imagePaths]
+
 print('[INFO] loading network ...')
 model = VGG16(weights = 'imagenet', include_top = False)
 dataset = HDF5DatasetWriter((len(imagePaths), 512*7*7), args['output'], dataKey = 'features', buffSize = args['buffer_size'])
 dataset.storeClassLabels(le.classes_)
+dataset.storeImageNames(names)
 
 widgets = ['Extracting Features: ', progressbar.Percentage(), ' ', progressbar.Bar(), ' ', progressbar.ETA()]
 pbar = progressbar.ProgressBar(max_value=len(imagePaths), widgets=widgets).start()
+
 for i in np.arange(0, len(imagePaths), bs):
     batchPaths = imagePaths[i:i+bs]
     batchLabels = labels[i:i+bs]
@@ -56,6 +60,7 @@ for i in np.arange(0, len(imagePaths), bs):
 
     dataset.add(features, batchLabels)
     pbar.update(i)
+
 dataset.close()
 pbar.finish()
 
