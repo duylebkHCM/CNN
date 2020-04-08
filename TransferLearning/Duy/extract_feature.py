@@ -12,7 +12,8 @@ import random
 import os
 
 ap = argparse.ArgumentParser()
-ap.add_argument("-d", "--dataset", required=True,help="path to input dataset")
+ap.add_argument("-d1", "--dataset1", required=True,help="path to input dataset")
+ap.add_argument("-d2", "--dataset2", required=True,help="path to input dataset")
 ap.add_argument("-o", "--output", required=True,help="path to output HDF5 file")
 ap.add_argument("-b", "--batch-size", type=int, default=32,help="batch size of images to be passed through network")
 ap.add_argument("-s", "--buffer-size", type=int, default=1000,help="size of feature extraction buffer")
@@ -21,7 +22,7 @@ args = vars(ap.parse_args())
 bs = args['batch_size']
 
 print('[INFO] loading images ...')
-imagePaths = list(paths.list_images(args['dataset']))
+imagePaths = list(paths.list_images(args['dataset1'])) + list(paths.list_images(args['dataset2']))
 random.shuffle(imagePaths)
 
 labels = [p.split(os.path.sep)[-2] for p in imagePaths]
@@ -38,6 +39,7 @@ dataset.storeImageNames(names)
 
 widgets = ['Extracting Features: ', progressbar.Percentage(), ' ', progressbar.Bar(), ' ', progressbar.ETA()]
 pbar = progressbar.ProgressBar(max_value=len(imagePaths), widgets=widgets).start()
+
 print('SHAPE' + str(len(imagePaths)))
 for i in np.arange(0, len(imagePaths), bs):
     batchPaths = imagePaths[i:i+bs]
