@@ -33,6 +33,11 @@ class HDF5DatasetWriter:
         labelSet = self.db.create_dataset('label_names', (len(classLabels), ), dtype=dt)
         labelSet[:] = classLabels
 
+    def storeImageNames(self, imageNames):
+        dt = h5py.special_dtype(vlen = str)
+        imageNameSet = self.db.create_dataset('image_names', (len(imageNames), ), dtype=dt)
+        imageNameSet[:] = imageNames
+         
     def close(self):
         if len(self.buffer['data']) > 0:
             self.flush()
