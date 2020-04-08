@@ -38,7 +38,7 @@ dataset.storeImageNames(names)
 
 widgets = ['Extracting Features: ', progressbar.Percentage(), ' ', progressbar.Bar(), ' ', progressbar.ETA()]
 pbar = progressbar.ProgressBar(max_value=len(imagePaths), widgets=widgets).start()
-
+print('SHAPE' + str(len(imagePaths)))
 for i in np.arange(0, len(imagePaths), bs):
     batchPaths = imagePaths[i:i+bs]
     batchLabels = labels[i:i+bs]
