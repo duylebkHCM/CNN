@@ -18,7 +18,7 @@ class HDF5DatasetWriter:
         self.buffer['data'].extend(rows)
         self.buffer['labels'].extend(labels)
 
-        if len(self.buffer['data']) >= self.bufSize:
+        if len(self.buffer['data']) >= self.buffSize:
             self.flush()
 
     def flush(self):
@@ -28,16 +28,6 @@ class HDF5DatasetWriter:
         self.idx = i
         self.buffer = {'data' : [], 'labels' : []}
 
-    def storeClassLabels(self, classLabels):
-        dt = h5py.special_dtype(vlen = str)
-        labelSet = self.db.create_dataset('label_names', (len(classLabels), ), dtype=dt)
-        labelSet[:] = classLabels
-
-    def storeImageNames(self, imageNames):
-        dt = h5py.special_dtype(vlen = str)
-        imageNameSet = self.db.create_dataset('image_names', (len(imageNames), ), dtype=dt)
-        imageNameSet[:] = imageNames
-         
     def close(self):
         if len(self.buffer['data']) > 0:
             self.flush()
