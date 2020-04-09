@@ -28,6 +28,11 @@ class HDF5DatasetWriter:
         self.idx = i
         self.buffer = {'data' : [], 'labels' : []}
 
+    def storeClassLabels(self, classLabels):
+        dt = h5py.special_dtype(vlen=str) # `vlen=unicode` for Py2.7
+        labelSet = self.db.create_dataset("label_names",(len(classLabels),), dtype=dt)
+        labelSet[:] = classLabels
+
     def close(self):
         if len(self.buffer['data']) > 0:
             self.flush()
